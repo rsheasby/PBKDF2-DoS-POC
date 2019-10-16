@@ -4,30 +4,30 @@ import "crypto/sha256"
 
 // HMAC This function assumed the input hash is in a clean state.
 func HMAC(key, message []byte) (mac []byte) {
+	// Normalize key length
 	if len(key) > sha256.BlockSize {
 		tmp := sha256.Sum256(key)
 		key = tmp[:]
 	}
-
 	if len(key) < sha256.BlockSize {
 		paddingLen := sha256.BlockSize - len(key)
 		padding := make([]byte, paddingLen)
 		key = append(key, padding...)
 	}
 
-	ikp := make([]byte, len(key))
+	// Generate ipad and opad
+	ipad := make([]byte, len(key))
 	for i := range key {
-		ikp[i] = key[i] ^ 0x36
+		ipad[i] = key[i] ^ 0x36
 	}
-	tmp := sha256.Sum256(append(ikp, message...))
-	message = tmp[:]
-
-	okp := make([]byte, len(key))
+	opad := make([]byte, len(key))
 	for i := range key {
-		okp[i] = key[i] ^ 0x5c
+		opad[i] = key[i] ^ 0x5c
 	}
-	tmp = sha256.Sum256(append(okp, message...))
-	mac = tmp[:]
 
-	return mac
+	// Perform hashing
+	ihash := sha256.Sum256(append(ipad, message...))
+	ohash := sha256.Sum256(append(opad, ihash[:]...))
+
+	return ohash[:]
 }
