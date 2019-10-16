@@ -1,17 +1,16 @@
 package main
 
-import "hash"
+import "crypto/sha256"
 
 // HMAC This function assumed the input hash is in a clean state.
-func HMAC(key, message []byte, hash hash.Hash) (mac []byte) {
-	if len(key) > hash.BlockSize() {
-		hash.Write(key)
-		key = hash.Sum([]byte{})
-		hash.Reset()
+func HMAC(key, message []byte) (mac []byte) {
+	if len(key) > sha256.BlockSize {
+		key = sha256.Sum256(key)
 	}
 
-	if len(key) < hash.BlockSize() {
-		padding := make([]byte, hash.BlockSize()-len(key))
+	if len(key) < sha256.BlockSize {
+		paddingLen := sha256.BlockSize - len(key)
+		padding := make([]byte, paddingLen)
 		key = append(key, padding...)
 	}
 
@@ -19,17 +18,13 @@ func HMAC(key, message []byte, hash hash.Hash) (mac []byte) {
 	for i := range key {
 		ikp[i] = key[i] ^ 0x36
 	}
-	hash.Write(append(ikp, message...))
-	message = hash.Sum([]byte{})
-	hash.Reset()
+	message = sha256.Sum256(append(ikp, message...))
 
 	okp := make([]byte, len(key))
 	for i := range key {
 		okp[i] = key[i] ^ 0x5c
 	}
-	hash.Write(append(okp, message...))
-	mac = hash.Sum([]byte{})
-	hash.Reset()
+	mac = sha256.Sum256(append(okp, message...))
 
 	return mac
 }
