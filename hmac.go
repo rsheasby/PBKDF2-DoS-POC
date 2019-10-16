@@ -8,8 +8,10 @@ func HMAC(key, message []byte, hash hash.Hash) (mac []byte) {
 		hash.Write(key)
 		key = hash.Sum([]byte{})
 		hash.Reset()
-	} else if len(key) < hash.BlockSize() {
-		padding := make([]byte, hash.Size()-len(key))
+	}
+
+	if len(key) < hash.BlockSize() {
+		padding := make([]byte, hash.BlockSize()-len(key))
 		append(key, padding)
 	}
 
