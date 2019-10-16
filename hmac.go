@@ -17,11 +17,9 @@ func HMAC(key, message []byte) (mac []byte) {
 
 	// Generate ipad and opad
 	ipad := make([]byte, len(key))
-	for i := range key {
-		ipad[i] = key[i] ^ 0x36
-	}
 	opad := make([]byte, len(key))
 	for i := range key {
+		ipad[i] = key[i] ^ 0x36
 		opad[i] = key[i] ^ 0x5c
 	}
 
