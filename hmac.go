@@ -23,11 +23,13 @@ func HMAC(key, message []byte, hash hash.Hash) (mac []byte) {
 	message = hash.Sum([]byte{})
 	hash.Reset()
 
-	opk := make([]byte, len(key))
+	okp := make([]byte, len(key))
 	for i, v := range key {
 		okp[i] = key[i] ^ 0x5c
 	}
 	hash.Write(append(okp, message))
 	mac = hash.Sum([]byte{})
 	hash.Reset()
+
+	return mac
 }
