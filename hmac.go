@@ -12,7 +12,7 @@ func HMAC(key, message []byte, hash hash.Hash) (mac []byte) {
 
 	if len(key) < hash.BlockSize() {
 		padding := make([]byte, hash.BlockSize()-len(key))
-		append(key, padding)
+		key = append(key, padding)
 	}
 
 	ikp := make([]byte, len(key))
