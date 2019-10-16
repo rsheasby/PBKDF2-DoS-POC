@@ -5,7 +5,7 @@ import "crypto/sha256"
 // HMAC This function assumed the input hash is in a clean state.
 func HMAC(key, message []byte) (mac []byte) {
 	if len(key) > sha256.BlockSize {
-		key = sha256.Sum256(key)
+		key = sha256.Sum256(key)[:]
 	}
 
 	if len(key) < sha256.BlockSize {
@@ -18,13 +18,13 @@ func HMAC(key, message []byte) (mac []byte) {
 	for i := range key {
 		ikp[i] = key[i] ^ 0x36
 	}
-	message = sha256.Sum256(append(ikp, message...))
+	message = sha256.Sum256(append(ikp, message...))[:]
 
 	okp := make([]byte, len(key))
 	for i := range key {
 		okp[i] = key[i] ^ 0x5c
 	}
-	mac = sha256.Sum256(append(okp, message...))
+	mac = sha256.Sum256(append(okp, message...))[:]
 
 	return mac
 }
