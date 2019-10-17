@@ -15,7 +15,7 @@ func HmacSha256NormalizeKey(key []byte) []byte {
 	return key
 }
 
-func HmacSha256(key, message []byte) (mac [32]byte) {
+func HmacSha256(key, message []byte) (mac []byte) {
 	// Normalize key length if necessary
 	if len(key) != sha256.BlockSize {
 		key = HmacSha256NormalizeKey(key)
@@ -33,5 +33,5 @@ func HmacSha256(key, message []byte) (mac [32]byte) {
 	ihash := sha256.Sum256(append(ipad, message...))
 	ohash := sha256.Sum256(append(opad, ihash[:]...))
 
-	return ohash
+	return ohash[:]
 }
